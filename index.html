@@ -1,175 +1,280 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MyTube</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101018">
+<title>Nova — Watch Something New</title>
 <style>
+:root{color-scheme:dark;--bg:#101018;--panel:#191923;--muted:#9b9bb0;--accent:#a78bfa;--line:#30303d}
 *{box-sizing:border-box}
-body{margin:0;background:#0f0f0f;color:white;font-family:Arial,sans-serif}
-header{height:65px;display:flex;align-items:center;gap:15px;padding:0 16px;background:#161616;position:sticky;top:0;z-index:5}
-.logo{font-size:23px;font-weight:bold;color:#ff3333;white-space:nowrap}
-.search{flex:1;display:flex;max-width:600px;margin:auto}
-input{min-width:0;width:100%;padding:12px;border:1px solid #444;border-radius:22px 0 0 22px;background:#0f0f0f;color:white;font-size:16px}
-button{cursor:pointer;border:0;color:white;background:#303030;padding:11px 16px}
-.search button{border-radius:0 22px 22px 0}
-.layout{display:flex}
-aside{width:175px;padding:18px 10px;flex-shrink:0}
-aside button{display:block;width:100%;text-align:left;margin-bottom:8px;border-radius:10px}
-aside button:hover,.active{background:#383838}
-main{padding:22px;flex:1;min-width:0}
-h2{font-size:21px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px 16px}
-.card{cursor:pointer;min-width:0}
-.thumb{width:100%;aspect-ratio:16/9;border-radius:12px;background:#272727;display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden}
+body{margin:0;background:var(--bg);color:#f6f5ff;font:15px system-ui,Arial}
+button,input{font:inherit}
+button{cursor:pointer;color:inherit}
+header{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:13px 5%;background:#101018ed;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.brand{font-size:23px;font-weight:850;letter-spacing:-1px;white-space:nowrap}
+.brand span{color:var(--accent)}
+.search{display:flex;flex:1;max-width:540px;margin:auto}
+.search input{width:100%;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:13px 0 0 13px;padding:11px;color:white;outline:none}
+.search button,.primary{background:var(--accent);color:#171124;border:0;padding:10px 16px;border-radius:0 13px 13px 0;font-weight:750}
+.avatar{border:1px solid var(--line);background:var(--panel);border-radius:50%;width:39px;height:39px}
+.layout{display:grid;grid-template-columns:190px minmax(0,1fr);max-width:1500px;margin:auto}
+aside{padding:20px 12px;position:sticky;top:67px;height:calc(100vh - 67px);border-right:1px solid var(--line)}
+.nav{display:block;width:100%;text-align:left;padding:13px;border:0;border-radius:12px;background:transparent;margin-bottom:6px}
+.nav:hover,.nav.active{background:#292638}
+main{min-width:0;padding:26px clamp(14px,3vw,38px)}
+h1{font-size:clamp(25px,4vw,36px);letter-spacing:-1.3px;margin:5px 0}
+.sub{color:var(--muted);margin:5px 0 22px}
+.pills{display:flex;gap:9px;overflow:auto;margin:20px 0}
+.pill{white-space:nowrap;border:1px solid var(--line);border-radius:30px;padding:9px 15px;background:var(--panel)}
+.pill.active{background:#d8ccff;color:#21163d}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:26px 17px}
+.card{min-width:0;cursor:pointer}
+.thumb{aspect-ratio:16/9;border-radius:15px;overflow:hidden;background:linear-gradient(135deg,#342552,#1b4152);position:relative;display:grid;place-items:center}
 .thumb img{width:100%;height:100%;object-fit:cover}
+.thumb .fallback{font-size:40px}
+.duration{position:absolute;right:8px;bottom:8px;background:#09090de8;border-radius:6px;padding:3px 6px;font-size:12px}
 .card h3{font-size:15px;line-height:1.4;margin:10px 0 5px}
-.meta{font-size:13px;color:#aaa}
-#player{display:none;margin-bottom:24px}
-#player iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:12px}
-.playerTitle{font-size:20px}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-.actions button{border-radius:20px}
-#message{color:#aaa}
-@media(max-width:600px){
- header{padding:0 10px;gap:8px}.logo{font-size:18px}
- aside{width:70px;padding:12px 4px}
- aside button{text-align:center;padding:12px 2px;font-size:11px}
- main{padding:12px 9px}.grid{grid-template-columns:1fr;gap:22px}
- .thumb{border-radius:9px}.search button{padding:10px}
+.meta{font-size:13px;color:var(--muted)}
+.creator{display:flex;gap:10px;align-items:center;margin-top:10px}
+.dot{display:grid;place-items:center;flex-shrink:0;width:35px;height:35px;border-radius:13px;background:#302747;color:#d7c4ff}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hidden{display:none!important}
+.action{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.action:hover{border-color:var(--accent)}
+#watch{margin-bottom:30px}
+#watch iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000}
+#watch h2{margin-bottom:7px}
+#watch p{color:var(--muted)}
+.empty{padding:35px 10px;color:var(--muted);text-align:center}
+#shortsFeed{height:calc(100dvh - 155px);overflow-y:auto;scroll-snap-type:y mandatory;display:grid;gap:16px;max-width:440px;margin:auto}
+.short{height:calc(100dvh - 175px);min-height:400px;max-height:780px;position:relative;scroll-snap-align:start;border-radius:22px;overflow:hidden;background:#201d2d}
+.short iframe{width:100%;height:100%;border:0}
+.shortLabel{position:absolute;top:12px;left:12px;background:#111c;padding:8px 12px;border-radius:12px;pointer-events:none;font-weight:700}
+#addForm{display:grid;gap:12px;max-width:600px}
+#addForm input{width:100%;padding:13px;border:1px solid var(--line);background:var(--panel);border-radius:12px;color:white}
+footer{padding:35px 0;color:var(--muted);font-size:12px}
+@media(max-width:650px){
+ header{padding:10px;gap:9px}.brand{font-size:19px}.avatar{display:none}
+ .layout{display:block}aside{position:fixed;z-index:20;top:auto;bottom:0;left:0;right:0;width:100%;height:64px;padding:5px 3px;background:#171720;border-top:1px solid var(--line);border-right:0;display:flex;justify-content:space-around}
+ .nav{width:auto;flex:1;text-align:center;font-size:11px;padding:8px 2px;margin:0}
+ main{padding:20px 13px 82px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:21px 11px}
+ .thumb{border-radius:11px}.card h3{font-size:14px}
+ #shortsFeed{height:calc(100dvh - 205px);max-width:380px}
+ .short{height:calc(100dvh - 225px);min-height:350px}
 }
 </style>
 </head>
 <body>
 <header>
-  <div class="logo">▶ MyTube</div>
+  <div class="brand">✦ nova<span>.</span></div>
   <form class="search" id="searchForm">
-    <input id="searchInput" placeholder="Search videos..." aria-label="Search videos">
-    <button aria-label="Search">🔎</button>
+    <input id="query" placeholder="Find your next obsession…" aria-label="Search videos">
+    <button aria-label="Search">⌕</button>
   </form>
+  <button class="avatar" onclick="page('add')" aria-label="Add a video">＋</button>
 </header>
 
 <div class="layout">
 <aside>
-  <button onclick="showHome()">🏠 Home</button>
-  <button onclick="showLiked()">❤️ Liked</button>
-  <button onclick="showAll()">🎬 All videos</button>
+  <button class="nav active" data-page="home" onclick="page('home')">⌂ &nbsp; Discover</button>
+  <button class="nav" data-page="shorts" onclick="page('shorts')">▣ &nbsp; Shorts</button>
+  <button class="nav" data-page="saved" onclick="page('saved')">♡ &nbsp; Favourites</button>
+  <button class="nav" data-page="history" onclick="page('history')">◷ &nbsp; History</button>
+  <button class="nav" data-page="add" onclick="page('add')">＋ &nbsp; Add video</button>
 </aside>
 
 <main>
-  <section id="player">
-    <iframe id="videoFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-    <h2 class="playerTitle" id="playingTitle"></h2>
-    <div class="actions">
-      <button id="likeButton">🤍 Like</button>
-      <button onclick="closePlayer()">✖ Close video</button>
-      <button id="youtubeButton">▶ Open on YouTube</button>
+<section id="home">
+  <h1>Find your next <span style="color:var(--accent)">favourite.</span></h1>
+  <p class="sub">A little corner of the internet, curated by you.</p>
+  <div class="pills">
+    <button class="pill active" onclick="filterCategory('All',this)">Everything</button>
+    <button class="pill" onclick="filterCategory('Gaming',this)">🎮 Gaming</button>
+    <button class="pill" onclick="filterCategory('Music',this)">♫ Music</button>
+    <button class="pill" onclick="filterCategory('Animation',this)">✧ Animation</button>
+  </div>
+  <div id="watch" class="hidden">
+    <iframe id="player" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    <h2 id="watchTitle"></h2>
+    <div class="row">
+      <p id="watchCreator"></p>
+      <button id="saveButton" class="action">♡ Save</button>
     </div>
-    <p class="meta">Video playback is provided by YouTube.</p>
-  </section>
-
-  <h2 id="heading">Recommended videos</h2>
-  <p id="message">Welcome to MyTube! Choose a video below.</p>
+    <p>Playing through the original video provider.</p>
+    <button class="action" onclick="closeWatch()">Close player ✕</button>
+  </div>
   <div class="grid" id="grid"></div>
+  <p class="empty hidden" id="empty">Nothing here yet. Try another search or add a video!</p>
+</section>
+
+<section id="shorts" class="hidden">
+  <h1>Quick <span style="color:var(--accent)">hits.</span></h1>
+  <p class="sub">Scroll vertically to explore short videos.</p>
+  <div id="shortsFeed"></div>
+</section>
+
+<section id="saved" class="hidden">
+  <h1>Your favourites ♡</h1>
+  <p class="sub">The videos you keep coming back to.</p>
+  <div class="grid" id="savedGrid"></div>
+</section>
+
+<section id="history" class="hidden">
+  <h1>Recently watched</h1>
+  <p class="sub">Your viewing history on this device.</p>
+  <div class="grid" id="historyGrid"></div>
+  <button class="action" onclick="clearHistory()">Clear history</button>
+</section>
+
+<section id="add" class="hidden">
+  <h1>Add to the collection ✦</h1>
+  <p class="sub">Add a YouTube video using its URL or ID.</p>
+  <form id="addForm">
+    <input id="videoUrl" placeholder="YouTube URL or video ID" required>
+    <input id="videoTitle" placeholder="Video title" required maxlength="100">
+    <input id="videoCreator" placeholder="Creator name" value="Community">
+    <select id="videoCategory" class="action">
+      <option>Gaming</option><option>Music</option><option>Animation</option><option>Other</option>
+    </select>
+    <button class="primary" style="border-radius:12px">Add to Nova ＋</button>
+  </form>
+  <p class="sub">Your additions are stored in this browser, not published to other users.</p>
+</section>
+
+<footer>Nova is an independent video discovery project. Videos remain hosted by their original providers.</footer>
 </main>
 </div>
 
 <script>
-const videos = [
- {id:"jNQXAC9IVRw",title:"Me at the zoo — the first YouTube video",channel:"YouTube Classics",emoji:"🦁"},
- {id:"aqz-KE-bpKQ",title:"Big Buck Bunny — animated short",channel:"Animation",emoji:"🐰"},
- {id:"ScMzIvxBSi4",title:"Creative video demo",channel:"Video Demos",emoji:"🎬"},
- {id:"M7lc1UVf-VE",title:"YouTube player demo",channel:"Developers",emoji:"💻"},
- {id:"ysz5S6PUM-U",title:"Sample video",channel:"Video Demos",emoji:"🌍"},
- {id:"dQw4w9WgXcQ",title:"A classic internet surprise",channel:"Internet Classics",emoji:"🎵"}
+const starter=[
+{id:"aqz-KE-bpKQ",title:"Big Buck Bunny",creator:"Animation",category:"Animation",emoji:"🐰"},
+{id:"jNQXAC9IVRw",title:"Me at the zoo",creator:"YouTube Classics",category:"Other",emoji:"🦁"},
+{id:"M7lc1UVf-VE",title:"Video player demo",creator:"Developers",category:"Gaming",emoji:"💻"},
+{id:"ysz5S6PUM-U",title:"Sample video",creator:"Video Demos",category:"Animation",emoji:"🌍"},
+{id:"ScMzIvxBSi4",title:"Creative video demo",creator:"Video Demos",category:"Music",emoji:"🎬"}
 ];
+const read=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
+let custom=read("nova-custom",[]);
+let saved=read("nova-saved",[]);
+let history=read("nova-history",[]);
+let videos=[...starter,...custom];
+let current=null,category="All",search="";
 
-let liked = JSON.parse(localStorage.getItem("mytube-likes") || "[]");
-let current = null;
-let mode = "all";
-
-const grid = document.getElementById("grid");
-const player = document.getElementById("player");
-
-function render(list){
- grid.innerHTML = "";
- document.getElementById("message").textContent =
-   list.length ? "" : "No videos found. Try another search!";
- list.forEach(v=>{
-   const card = document.createElement("article");
-   card.className = "card";
-   card.innerHTML = `
-    <div class="thumb">
-      <img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg"
-       alt="" loading="lazy"
-       onerror="this.style.display='none';this.parentElement.textContent='${v.emoji}'">
-    </div>
-    <h3></h3>
-    <div class="meta"></div>`;
-   card.querySelector("h3").textContent = v.title;
-   card.querySelector(".meta").textContent =
-     v.channel + (liked.includes(v.id) ? " · ❤️" : "");
-   card.onclick = ()=>play(v);
-   grid.appendChild(card);
+function persist(){localStorage.setItem("nova-custom",JSON.stringify(custom))}
+function allVideos(){return [...starter,...custom]}
+function filtered(list){
+ return list.filter(v=>(category==="All"||v.category===category)&&
+ (v.title+" "+v.creator+" "+v.category).toLowerCase().includes(search.toLowerCase()));
+}
+function card(v){
+ const el=document.createElement("article");
+ el.className="card";
+ const thumb=document.createElement("div");thumb.className="thumb";
+ const img=document.createElement("img");
+ img.loading="lazy";img.alt="";img.src="https://i.ytimg.com/vi/"+v.id+"/hqdefault.jpg";
+ img.onerror=()=>{img.remove();thumb.insertAdjacentHTML("afterbegin",'<span class="fallback">✦</span>')};
+ thumb.appendChild(img);
+ const duration=document.createElement("span");duration.className="duration";duration.textContent="▶ Watch";thumb.appendChild(duration);
+ const title=document.createElement("h3");title.textContent=v.title;
+ const meta=document.createElement("div");meta.className="meta";meta.textContent=v.creator+" · "+v.category;
+ el.append(thumb,title,meta);el.onclick=()=>watch(v);return el;
+}
+function fill(id,list){
+ const el=document.getElementById(id);el.replaceChildren();
+ list.forEach(v=>el.appendChild(card(v)));
+ if(id==="grid")document.getElementById("empty").classList.toggle("hidden",list.length>0);
+}
+function render(){
+ videos=allVideos();
+ fill("grid",filtered(videos));
+ fill("savedGrid",videos.filter(v=>saved.includes(v.id)));
+ fill("historyGrid",history.map(id=>videos.find(v=>v.id===id)).filter(Boolean));
+}
+function page(name){
+ document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(name).classList.remove("hidden");
+ document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
+ if(name==="shorts")renderShorts();
+ if(name==="saved"||name==="history")render();
+ window.scrollTo(0,0);
+}
+function filterCategory(value,button){
+ category=value;
+ document.querySelectorAll(".pill").forEach(b=>b.classList.toggle("active",b===button));
+ render();
+}
+function watch(v){
+ current=v;
+ document.getElementById("watch").classList.remove("hidden");
+ document.getElementById("player").src="https://www.youtube-nocookie.com/embed/"+v.id;
+ document.getElementById("watchTitle").textContent=v.title;
+ document.getElementById("watchCreator").textContent="✦ "+v.creator;
+ updateSave();
+ if(!history.includes(v.id))history.unshift(v.id);
+ history=history.slice(0,30);
+ localStorage.setItem("nova-history",JSON.stringify(history));
+ document.getElementById("watch").scrollIntoView({behavior:"smooth"});
+}
+function closeWatch(){
+ document.getElementById("player").src="";
+ document.getElementById("watch").classList.add("hidden");
+}
+function updateSave(){
+ document.getElementById("saveButton").textContent=saved.includes(current.id)?"♥ Saved":"♡ Save";
+}
+document.getElementById("saveButton").onclick=()=>{
+ if(!current)return;
+ saved=saved.includes(current.id)?saved.filter(id=>id!==current.id):[...saved,current.id];
+ localStorage.setItem("nova-saved",JSON.stringify(saved));updateSave();render();
+};
+function clearHistory(){
+ history=[];localStorage.setItem("nova-history","[]");render();
+}
+function getId(input){
+ try{
+  if(/^[\w-]{11}$/.test(input.trim()))return input.trim();
+  const u=new URL(input);
+  if(u.hostname==="youtu.be")return u.pathname.slice(1).split("/")[0];
+  if(u.searchParams.get("v"))return u.searchParams.get("v");
+  const m=u.pathname.match(/\/(?:embed|shorts)\/([\w-]{11})/);
+  return m?m[1]:null;
+ }catch{return null}
+}
+document.getElementById("addForm").onsubmit=e=>{
+ e.preventDefault();
+ const id=getId(document.getElementById("videoUrl").value);
+ if(!id){alert("Please enter a valid YouTube video URL or 11-character video ID.");return}
+ if(allVideos().some(v=>v.id===id)){alert("That video is already in Nova!");return}
+ custom.unshift({
+  id,title:document.getElementById("videoTitle").value.trim(),
+  creator:document.getElementById("videoCreator").value.trim()||"Community",
+  category:document.getElementById("videoCategory").value,emoji:"✦"
+ });
+ persist();render();e.target.reset();page("home");
+};
+document.getElementById("searchForm").onsubmit=e=>{
+ e.preventDefault();search=document.getElementById("query").value.trim();
+ page("home");render();
+};
+document.getElementById("query").addEventListener("input",e=>{
+ search=e.target.value;render();
+});
+function renderShorts(){
+ const feed=document.getElementById("shortsFeed");feed.replaceChildren();
+ allVideos().forEach(v=>{
+  const item=document.createElement("article");item.className="short";
+  const frame=document.createElement("iframe");
+  frame.loading="lazy";
+  frame.src="https://www.youtube-nocookie.com/embed/"+v.id;
+  frame.title=v.title;
+  frame.allow="accelerometer; encrypted-media; gyroscope; picture-in-picture";
+  frame.allowFullscreen=true;
+  const label=document.createElement("div");label.className="shortLabel";label.textContent="✦ "+v.title;
+  item.append(frame,label);feed.appendChild(item);
  });
 }
-
-function play(v){
- current = v;
- player.style.display = "block";
- document.getElementById("playingTitle").textContent = v.title;
- document.getElementById("videoFrame").src =
-   "https://www.youtube-nocookie.com/embed/" + v.id;
- document.getElementById("youtubeButton").onclick = ()=>
-   window.open("https://www.youtube.com/watch?v="+v.id,"_blank");
- updateLike();
- player.scrollIntoView({behavior:"smooth",block:"start"});
-}
-
-function closePlayer(){
- document.getElementById("videoFrame").src = "";
- player.style.display = "none";
- current = null;
-}
-
-function updateLike(){
- document.getElementById("likeButton").textContent =
-   liked.includes(current.id) ? "❤️ Liked" : "🤍 Like";
-}
-
-document.getElementById("likeButton").onclick = ()=>{
- if(!current)return;
- liked = liked.filter(id=>id!==current.id);
- if(!JSON.parse(localStorage.getItem("mytube-likes")||"[]").includes(current.id))
-   liked.push(current.id);
- localStorage.setItem("mytube-likes",JSON.stringify(liked));
- updateLike();
- if(mode==="liked")showLiked();
- else render(videos.filter(v=>
-   v.title.toLowerCase().includes(document.getElementById("searchInput").value.toLowerCase())));
-};
-
-function showHome(){
- mode="all";
- document.getElementById("heading").textContent="Recommended videos";
- document.getElementById("searchInput").value="";
- render(videos);
-}
-function showAll(){showHome()}
-function showLiked(){
- mode="liked";
- document.getElementById("heading").textContent="Liked videos";
- render(videos.filter(v=>liked.includes(v.id)));
-}
-document.getElementById("searchForm").onsubmit = e=>{
- e.preventDefault();
- mode="search";
- const q=document.getElementById("searchInput").value.toLowerCase().trim();
- document.getElementById("heading").textContent="Search results";
- render(videos.filter(v=>(v.title+" "+v.channel).toLowerCase().includes(q)));
-};
-render(videos);
+render();
 </script>
 </body>
 </html>
